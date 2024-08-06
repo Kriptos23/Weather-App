@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:clima/screens/location_screen.dart';
+import 'package:clima/services/networking.dart';
 import 'package:flutter/material.dart';
 import 'package:clima/services/location.dart';
 import 'package:clima/utilities/constants.dart';
@@ -35,7 +36,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
               onPressed: () {
                 //Get the current location
                 getLocation();
-                getData();
+                getLocationData();
                 Navigator.push(context, MaterialPageRoute(builder: (context)
                 =>LocationScreen()));
               },
@@ -56,17 +57,15 @@ class _LoadingScreenState extends State<LoadingScreen> {
     print("latitude: ${location.latitude}, longitude: ${location.longitude}");
   }
   
-  Future<void> getData() async{
-    Response response = await get(Uri.parse('https://api.openweathermap.org/data/2'
-        '.5/weather?lat=$latitude&lon=$longitude&appid=329629c163d76b404a7868da791eb85c'));
-    String data = response.body;
-    print(response.statusCode);
+  Future<void> getLocationData() async{
+    Networking networking = Networking('https://api.openweathermap.org/data/2'
+        '.5/weather?lat=$latitude&lon=$longitude&appid=329629c163d76b404a7868da791eb85c');
 
-    var DecodedData = jsonDecode(data);
+    var getData = await networking.getData();
 
-    kkTemp = await DecodedData['main']['temp'];
-    kkId = await DecodedData['weather'][0]['id'];
-    kkName = await DecodedData['name'];
+    kkTemp = await getData['main']['temp'];
+    kkId = await getData['weather'][0]['id'];
+    kkName = await getData['name'];
 
     print("temp: $kkTemp, id: $kkId, name: $kkName");
   }
