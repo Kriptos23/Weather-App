@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:clima/utilities/constants.dart';
+import 'dart:convert';
 
 class LocationScreen extends StatefulWidget {
   @override
   _LocationScreenState createState() => _LocationScreenState();
+
+  final WeatherData;
+
+  LocationScreen({this.WeatherData});
+
+  int temp = WeatherData['main']['temp'];
 }
 
 class _LocationScreenState extends State<LocationScreen> {
@@ -49,7 +56,7 @@ class _LocationScreenState extends State<LocationScreen> {
                 child: Row(
                   children: <Widget>[
                     Text(
-                      '32°',
+                      '${}',
                       style: kkTempTextStyle,
                     ),
                     Text(
