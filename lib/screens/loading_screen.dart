@@ -1,19 +1,13 @@
 import 'package:clima/screens/location_screen.dart';
-import 'package:clima/services/networking.dart';
+import 'package:clima/services/weather.dart';
 import 'package:flutter/material.dart';
-import 'package:clima/services/location.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'dart:convert';
-
-double? latitude;
-double? longitude;
-
-double? kkTemp;
-int? kkId;
-String? kkName;
 
 class LoadingScreen extends StatefulWidget {
+  const LoadingScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _LoadingScreenState createState() => _LoadingScreenState();
 }
 
@@ -40,29 +34,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   void getLocation() async{
-    Location location = Location();
-    await location.getCurrentLocation();
-    latitude = location.latitude!;
-    longitude = location.longitude!;
-    print("latitude: ${location.latitude}, longitude: ${location.longitude}");
-    final locDataObj = await getLocationData();
+    WeatherModel weatherModel = WeatherModel();
+    var weatherData = await weatherModel.getWeatherData();
+    // print('here I am ${weatherData['main']}');
 
+    // ignore: use_build_context_synchronously
     Navigator.push(context, MaterialPageRoute(builder: (context)
-    =>LocationScreen(WeatherData: locDataObj,)));
-  }
-  
-  Future getLocationData() async{
-    Networking networking = Networking('https://api.openweathermap.org/data/2'
-        '.5/weather?lat=$latitude&lon=$longitude&appid=329629c163d76b404a7868da791eb85c');
-
-    var getData = await networking.getData();
-    return getData;
-    kkTemp = await getData['main']['temp'];
-    print(kkTemp);
-    // kkId = await getData['weather'][0]['id'];
-    // kkName = await getData['name'];
-    //
-    // print("temp: $kkTemp, id: $kkId, name: $kkName");
+    =>LocationScreen(WeatherData: weatherData,)));
   }
   //id: 329629c163d76b404a7868da791eb85c
 //alt id: b6907d289e10d714a6e88b30761fae22

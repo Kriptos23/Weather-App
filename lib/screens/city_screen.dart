@@ -6,6 +6,8 @@ class CityScreen extends StatefulWidget {
   _CityScreenState createState() => _CityScreenState();
 }
 
+String? typedCityName;
+
 class _CityScreenState extends State<CityScreen> {
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,9 @@ class _CityScreenState extends State<CityScreen> {
               Align(
                 alignment: Alignment.topLeft,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   child: Icon(
                     Icons.arrow_back_ios,
                     size: 50.0,
@@ -33,7 +37,21 @@ class _CityScreenState extends State<CityScreen> {
               ),
               Container(
                 padding: EdgeInsets.all(20.0),
-                child: null,
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'city name',
+                    labelStyle: TextStyle(color: Colors.blue[200]),
+                    //   enabledBorder: UnderlineInputBorder(borderSide: BorderSide
+                    //     (color: Colors.red)), focusedBorder:
+                    // UnderlineInputBorder(borderSide: BorderSide(color: Colors
+                    //     .red), )
+                  ),
+                  onSubmitted: (String value) {
+                    setState(() {
+                      typedCityName = value;
+                    });
+                  },
+                ),
               ),
               TextButton(
                 onPressed: () {},
@@ -42,6 +60,7 @@ class _CityScreenState extends State<CityScreen> {
                   style: kkButtonTextStyle,
                 ),
               ),
+              Container(child: Text('${typedCityName ?? 'Your City Name'}'))
             ],
           ),
         ),

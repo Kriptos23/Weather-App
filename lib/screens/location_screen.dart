@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:clima/utilities/constants.dart';
-import 'dart:convert';
+import 'package:clima/services/weather.dart';
+import 'package:clima/screens/city_screen.dart';
 
 class LocationScreen extends StatefulWidget {
   @override
@@ -9,11 +10,47 @@ class LocationScreen extends StatefulWidget {
   final WeatherData;
 
   LocationScreen({this.WeatherData});
-
-  int temp = WeatherData['main']['temp'];
 }
 
+// void printData() async{
+//   print(widget.WeatherData)
+// }
+
 class _LocationScreenState extends State<LocationScreen> {
+  WeatherModel weather = WeatherModel();
+  String? weatherIcon;
+  String? weatherMessage;
+  int? temperature;
+  late int condition;
+  late String cityName;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print('Inside of the second screen ${widget.WeatherData['main']['temp']}');
+    updateUI(widget.WeatherData);
+  }
+
+  void updateUI(dynamic weatherData) {
+    setState(() {
+      if(weatherData == null){
+        temperature = 0;
+        condition = 0;
+        cityName = 'couldn\'t find a city';
+        return;
+      }
+      double temp =  weatherData['main']['temp'];
+      temperature =  temp.toInt();
+      condition =  weatherData['weather'][0]['id'];
+      cityName =  weatherData['name'];
+      weatherIcon =  (weather.getWeatherIcon(condition!));
+      weatherMessage =  weather.getMessage(temperature!);
+
+      print("checkin: $weatherIcon");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +63,7 @@ class _LocationScreenState extends State<LocationScreen> {
                 Colors.white.withOpacity(0.8), BlendMode.dstATop),
           ),
         ),
-        constraints: const BoxConstraints.expand(),
+        constraints: BoxConstraints.expand(),
         child: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -36,40 +73,46 @@ class _LocationScreenState extends State<LocationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   TextButton(
-                    onPressed: () {},
+                    onPressed: ()async {
+                      var weatherData = await(weather.getWeatherData());
+                      updateUI(weatherData);
+                    },
                     child: const Icon(
                       Icons.near_me,
                       size: 50.0,
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
-                    child: const Icon(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder:
+                      (context)=>CityScreen()));
+                    },
+                    child: Icon(
                       Icons.location_city,
                       size: 50.0,
                     ),
                   ),
                 ],
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Row(
                   children: <Widget>[
                     Text(
-                      '${}',
+                      '${temperature ?? 'default'}',
                       style: kkTempTextStyle,
                     ),
                     Text(
-                      '☀️',
-                      style: kkConditionTextStyle,
+                      '$weatherIcon',
+                      style: kkConditionTextStyle.copyWith(),
                     ),
                   ],
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(right: 15.0),
                 child: Text(
-                  "It's 🍦 time in San Francisco!",
+                  "$weatherMessage in $cityName",
                   textAlign: TextAlign.right,
                   style: kkMessageTextStyle,
                 ),
@@ -81,3 +124,4 @@ class _LocationScreenState extends State<LocationScreen> {
     );
   }
 }
+
