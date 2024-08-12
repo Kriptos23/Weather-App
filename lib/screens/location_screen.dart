@@ -24,6 +24,8 @@ class _LocationScreenState extends State<LocationScreen> {
   late int condition;
   late String cityName;
 
+  late dynamic newCityName;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -34,18 +36,18 @@ class _LocationScreenState extends State<LocationScreen> {
 
   void updateUI(dynamic weatherData) {
     setState(() {
-      if(weatherData == null){
+      if (weatherData == null) {
         temperature = 0;
         condition = 0;
         cityName = 'couldn\'t find a city';
         return;
       }
-      double temp =  weatherData['main']['temp'];
-      temperature =  temp.toInt();
-      condition =  weatherData['weather'][0]['id'];
-      cityName =  weatherData['name'];
-      weatherIcon =  (weather.getWeatherIcon(condition!));
-      weatherMessage =  weather.getMessage(temperature!);
+      double temp = weatherData['main']['temp'];
+      temperature = temp.toInt();
+      condition = weatherData['weather'][0]['id'];
+      cityName = weatherData['name'];
+      weatherIcon = (weather.getWeatherIcon(condition));
+      weatherMessage = weather.getMessage(temperature!);
 
       print("checkin: $weatherIcon");
     });
@@ -73,8 +75,8 @@ class _LocationScreenState extends State<LocationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   TextButton(
-                    onPressed: ()async {
-                      var weatherData = await(weather.getWeatherData());
+                    onPressed: () async {
+                      var weatherData = await (weather.getWeatherData());
                       updateUI(weatherData);
                     },
                     child: const Icon(
@@ -83,9 +85,14 @@ class _LocationScreenState extends State<LocationScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder:
-                      (context)=>CityScreen()));
+                    onPressed: () async {
+                      newCityName = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CityScreen()));
+                      var weatherData =
+                          await (weather.getWeatherCity(newCityName));
+                      updateUI(weatherData);
                     },
                     child: Icon(
                       Icons.location_city,
@@ -124,4 +131,3 @@ class _LocationScreenState extends State<LocationScreen> {
     );
   }
 }
-

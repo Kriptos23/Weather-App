@@ -24,6 +24,13 @@ class WeatherModel {
     return(await weatherData);
   }
 
+  Future<dynamic> getWeatherCity(String cityName) async{
+    Networking networking = Networking
+      ('${url}q=$cityName&appid=$apiKey&units=metric');
+
+    var weatherData = await networking.getData();
+    return(weatherData);
+  }
 
   String getWeatherIcon(int condition) {
     if (condition < 300) {
